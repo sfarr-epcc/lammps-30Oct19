@@ -734,6 +734,8 @@ double PairCoulLongOffcentre::single(int i, int j, int itype, int jtype,
   int *ellipsoid = atom->ellipsoid;
   double **x = atom->x;
 
+  bool sameAtom = i == j;
+
   int ii,jj,inum,jnum;
   double q1, q2;
   double rinv;
@@ -757,6 +759,14 @@ double PairCoulLongOffcentre::single(int i, int j, int itype, int jtype,
     MathExtra::quat_to_mat(iquat, rotMat1);
   }
 
+  // rotate site2 in lab frame
+  double rotMat2[3][3];
+  if (nsites[jtype] > 0) {
+    jquat = bonus[ellipsoid[j]].quat;
+    MathExtra::quat_to_mat(jquat, rotMat2);
+  }
+
+  
   for (int s1 = 1; s1 <= nsites[itype]; ++s1) {
     q1 = molFrameCharge[itype][s1];
     double labFrameSite1[3] = {0.0, 0.0, 0.0};
@@ -778,14 +788,6 @@ double PairCoulLongOffcentre::single(int i, int j, int itype, int jtype,
       labFrameSite1[1]+x[i][1],
       labFrameSite1[2]+x[i][2]
     };
-    // rotate site2 in lab frame
-    double rotMat2[3][3];
-    if (nsites[jtype] > 0) {
-      jquat = bonus[ellipsoid[j]].quat;
-      MathExtra::quat_to_mat(jquat, rotMat2);
-      //this was originally here but why not quat_to_mat as for site 1?
-      //MathExtra::quat_to_mat_trans(jquat, rotMat2);
-    }
 
     for (int s2 = 1; s2 <= nsites[jtype]; ++s2) {
       double labFrameSite2[3] = {0.0, 0.0, 0.0};
@@ -816,7 +818,7 @@ double PairCoulLongOffcentre::single(int i, int j, int itype, int jtype,
       //domain->minimum_image(r12[0], r12[1], r12[2]);
       rsq = MathExtra::dot3(r12, r12);
 
-      if (rsq < cut_coulsq) {
+      if ((rsq < cut_coulsq) && ((!sameAtom) || (s1 < s2))) {
         r2inv = 1.0/rsq;
         q2 = molFrameCharge[jtype][s2];
 
@@ -844,7 +846,9 @@ double PairCoulLongOffcentre::single(int i, int j, int itype, int jtype,
           }
         }
 
+        if(!sameAtom){
         fpair += forcecoul * r2inv;
+        }
 
         if (!ncoultablebits || rsq <= tabinnersq)
           phicoul += prefactor*erfc;

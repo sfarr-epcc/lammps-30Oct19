@@ -973,6 +973,8 @@ void PairGayBerne::compute_eta_torque(double m[3][3], double m2[3][3],
 
 /* ----------------------------------------------------------------------
    attempt to enable single for compute group/group (matteo)
+
+   modified for computer inter/molc (Stephen Farr)
    ---------------------------------------------------------------------- */
 
 double PairGayBerne::single(int i, int j, int itype, int jtype, double rsq,
@@ -981,6 +983,12 @@ double PairGayBerne::single(int i, int j, int itype, int jtype, double rsq,
                             double &fpair) // force is expected
   // to be isotropic....
 {
+
+  // check for self interaction which can be called by compute inter/molc
+  if (i==j) return 0.0;
+
+
+
   double a1[3][3],b1[3][3],g1[3][3],a2[3][3],b2[3][3],g2[3][3],temp[3][3];
   double one_eng(0.0), r2inv(0.0), r6inv(0.0), forcelj(0.0);
   double fforce[3],ttor[3],rtor[3],r12[3];
@@ -995,7 +1003,11 @@ double PairGayBerne::single(int i, int j, int itype, int jtype, double rsq,
   r12[2] = x[j][2]-x[i][2];
 
   // dont trust passed arg
+  // needs to be recomputed incase this is being called by compute inter/molc
   rsq = r12[0]*r12[0] + r12[1]*r12[1] + r12[2]*r12[2];
+
+  // dont compute if r greater than cutoff
+  if (rsq >= cutsq[itype][jtype]) return 0.0;
 
   switch (form[itype][jtype]) {
   case SPHERE_SPHERE:
@@ -1068,6 +1080,8 @@ double PairGayBerne::single_aniso(int i, int j, int itype, int jtype,
                                   double ttor[3],
                                   double rtor[3])
 {
+  if (i==j) return 0.0;
+
   double a1[3][3],b1[3][3],g1[3][3],a2[3][3],b2[3][3],g2[3][3],temp[3][3];
   double one_eng(0.0), r2inv(0.0), r6inv(0.0), forcelj(0.0);
   double r12[3];
@@ -1080,6 +1094,9 @@ double PairGayBerne::single_aniso(int i, int j, int itype, int jtype,
   r12[0] = x[j][0]-x[i][0];
   r12[1] = x[j][1]-x[i][1];
   r12[2] = x[j][2]-x[i][2];
+
+  // dont trust passed arg
+  rsq = r12[0]*r12[0] + r12[1]*r12[1] + r12[2]*r12[2];
 
   switch (form[itype][jtype]) {
   case SPHERE_SPHERE:

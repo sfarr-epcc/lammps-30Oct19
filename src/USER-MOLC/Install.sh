@@ -86,3 +86,6 @@ action compute_fep_offcentre_charges.h
 action compute_fep_offcentre_charges.cpp
 action compute_inter.h
 action compute_inter.cpp
+action compute_inter_molc.h
+action compute_inter_molc.cpp
+
