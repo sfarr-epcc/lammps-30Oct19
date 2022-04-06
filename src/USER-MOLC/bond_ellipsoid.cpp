@@ -627,7 +627,12 @@ double BondEllipsoid::equilibrium_distance(int i)
 
 void BondEllipsoid::write_restart(FILE *fp)
 {
-  error->all(FLERR,"BondEllipsoid::write_restart not implemented");
+  // This function is not implemented, however it does not need to be 
+  // implemented if we correctly set the bond_style and coeffs
+  // when the simulation is restarted.
+
+
+  //error->all(FLERR,"BondEllipsoid::write_restart not implemented");
 }
 
 /* ----------------------------------------------------------------------
@@ -636,7 +641,11 @@ void BondEllipsoid::write_restart(FILE *fp)
 
 void BondEllipsoid::read_restart(FILE *fp)
 {
-  error->all(FLERR,"BondEllipsoid::read_restart not implemented");
+  // This function is not implemented, however it does not need to be 
+  // implemented if we correctly set the bond_style and coeffs
+  // when the simulation is restarted.
+
+  //error->all(FLERR,"BondEllipsoid::read_restart not implemented");
 }
 
 /* ----------------------------------------------------------------------
