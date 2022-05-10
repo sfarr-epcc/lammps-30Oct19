@@ -88,4 +88,6 @@ action compute_inter.h
 action compute_inter.cpp
 action compute_inter_molc.h
 action compute_inter_molc.cpp
+action pair_molc_cut.cpp
+action pair_molc_cut.h
 

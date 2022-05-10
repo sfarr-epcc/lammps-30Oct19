@@ -166,13 +166,20 @@ void ComputeInterMolc::init()
     cutsq = force->pair->cutsq;
   } else pair = NULL;
 
-
+  longflag=0;
   // this only works with hybrid with offcentre and Gayberne
-  if(force->pair_match("coul/long/offcentre",0,0) && force->pair_match("gayberne",0,0) ){
+  if(force->pair_match("coul/long/offcentre",0,0) && force->pair_match("gayberne",0,0)){
+    longflag=1; // set longflag so we use the modified compute that is correct for long styles.
+    //printf("found compatible pair styles\n");
+  }
+  else if(force->pair_match("coul/cut/offcentre",0,0) && force->pair_match("gayberne",0,0)){
+    //printf("found compatible pair styles\n");
+  }
+  else if(force->pair_match("molc/cut",0)){
     //printf("found compatible pair styles\n");
   }
   else{
-    error->all(FLERR,"compute inter/molc requires pair_style hybrid gayberne coul/long/offcentre");
+    error->all(FLERR,"compute inter/molc requires MOLC pair styles");
   }
 
 
@@ -318,8 +325,13 @@ void ComputeInterMolc::pair_contribution()
           // cannot just skip, need to compute with special_bonds=0 functionality to ensure the long range 
           // interactions are handled correctly and the full coulomb term is excluded.
           //continue;
+          if (longflag){
           factor_lj=0.0;
           factor_coul=0.0;
+          }
+          else{
+            continue;
+          }
           //printf("setting factors to zero\n");
       }
 
@@ -370,8 +382,10 @@ void ComputeInterMolc::pair_contribution()
     }
 
     // make sure to compute offcentre self interactions
+    if(longflag){
     double temp; // these do not affect the force
     one[0]+=pair->single(i,i,itype,itype,0.0,0.0,0.0,temp);
+    }
 
     
 
