@@ -36,7 +36,7 @@
 using namespace LAMMPS_NS;
 
 
-#define DEBUG
+//#define DEBUG
 
 /* ---------------------------------------------------------------------- */
 
