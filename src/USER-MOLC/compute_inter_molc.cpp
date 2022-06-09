@@ -47,6 +47,8 @@
 using namespace LAMMPS_NS;
 using namespace MathConst;
 
+//#define DEBUG
+
 #define SMALL 0.00001
 
 //enum{OFF,INTER,INTRA};
@@ -169,6 +171,10 @@ void ComputeInterMolc::init()
   longflag=0;
   // this only works with hybrid with offcentre and Gayberne
   if(force->pair_match("coul/long/offcentre",0,0) && force->pair_match("gayberne",0,0)){
+    longflag=1; // set longflag so we use the modified compute that is correct for long styles.
+    //printf("found compatible pair styles\n");
+  }
+  else if(force->pair_match("molc/long",0)){
     longflag=1; // set longflag so we use the modified compute that is correct for long styles.
     //printf("found compatible pair styles\n");
   }
@@ -350,6 +356,10 @@ void ComputeInterMolc::pair_contribution()
       // themselves!
       eng = pair->single(i,j,itype,jtype,0.0,factor_coul,factor_lj,fpair);
 
+      // #ifdef DEBUG
+      // printf("i,j: %d,%d: %15g\n",i,j, eng);
+      // #endif
+    
 
       // energy only computed once so tally full amount
       // force tally is jgroup acting on igroup
@@ -387,7 +397,7 @@ void ComputeInterMolc::pair_contribution()
     one[0]+=pair->single(i,i,itype,itype,0.0,0.0,0.0,temp);
     }
 
-    
+
 
 
   }
