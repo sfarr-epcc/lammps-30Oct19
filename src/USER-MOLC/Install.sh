@@ -90,4 +90,7 @@ action compute_inter_molc.h
 action compute_inter_molc.cpp
 action pair_molc_cut.cpp
 action pair_molc_cut.h
-
+action pair_molc_long.cpp
+action pair_molc_long.h
+action pppm_molc.h atom_vec_ellipsoid.h
+action pppm_molc.cpp gridcomm.h
