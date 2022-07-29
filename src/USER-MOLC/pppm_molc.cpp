@@ -176,14 +176,6 @@ void PPPMMolc::settings(int narg, char **arg)
   //int atomType[nCoulSites+1];
 
 
-  // create the arrays here, we copy the values from the pair style in the init function
-  nsites = new int[atom->ntypes+1];
-  for (int t = 1; t <= atom->ntypes; ++t)
-    nsites[t] = 0;
-
-  molFrameSite = new double**[atom->ntypes+1];
-  molFrameCharge = new double*[atom->ntypes+1];
-
 
   //max_nsites = 0;
   //int totsites = 0;
@@ -319,6 +311,17 @@ void PPPMMolc::init()
   #ifdef DEBUG
   printf("pppm cutoff = %f\n", cutoff);
   #endif
+ 
+  
+  // create the arrays here, we copy then values from the pair style
+  
+  nsites = new int[atom->ntypes+1];
+  for (int t = 1; t <= atom->ntypes; ++t)
+    nsites[t] = 0;
+
+  molFrameSite = new double**[atom->ntypes+1];
+  molFrameCharge = new double*[atom->ntypes+1];
+
 
   // copy offcentre charge information from the pair style
   int * ref_nsites = (int *) force->pair->extract("nsites",itmp);
